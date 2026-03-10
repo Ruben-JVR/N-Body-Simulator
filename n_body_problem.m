@@ -12,6 +12,7 @@ function n_body_problem
 ##  strct1.M = [2,3,1];
 ##  strct1.Q = nan;
 ##  strct1.B = nan;
+##  strct1.Bx = [];
 ##  strct1.N = size(strct1.M,2);
 ##  strct1.FConstant = 1;
 ##  strct1.integrationTime = [0,3];
@@ -36,6 +37,7 @@ function n_body_problem
 ##  strct2.M = [1,1,1,1];
 ##  strct2.Q = nan;
 ##  strct2.B = nan;
+##  strct2.Bx = [];
 ##  strct2.N = size(strct2.M,2);
 ##  strct2.FConstant = 1;
 ##  strct2.integrationTime = [0,8];
@@ -58,6 +60,7 @@ function n_body_problem
 ##  strct3.M = [1,1,1];
 ##  strct3.Q = nan;
 ##  strct3.B = nan;
+##  strct3.Bx = [];
 ##  strct3.N = size(strct3.M,2);
 ##  strct3.FConstant = 1;
 ##  strct3.integrationTime = [0,5];
@@ -77,24 +80,25 @@ function n_body_problem
   %SIMULATION 4
   %CHARGED MASSES
   %==============================================
-  strct4.figNum = 4;
-  strct4.M = [1,1];
-  strct4.Q = [1,1];
-  strct4.B = nan;
-  strct4.N = size(strct4.M,2);
-  strct4.FConstant = 1;
-  strct4.QConstant = 1;
-  strct4.integrationTime = [0,5];
-  strct4.axs = [-1.5,1.5,-1.5,1.5,-1.5,1.5];
-  strct4.timePlaybackModifier = 2.5;
-  strct4.timeSkip = 0.01;
-  strct4.selectedBody = 1;
-  strct4.displayPath = true;
-  strct4.figTitle = '2 Bodies Interacting to Produce 0 Net Acceleration';
-
-  y4 = IConditions({'1 x -1','2 x 1','1 vy 0.5'}, strct4.N);
-
-  initialize_N_Body_Simulation(strct4,y4);
+##  strct4.figNum = 4;
+##  strct4.M = [1,1];
+##  strct4.Q = [1,1];
+##  strct4.B = nan;
+##  strct4.Bx = [];
+##  strct4.N = size(strct4.M,2);
+##  strct4.FConstant = 1;
+##  strct4.QConstant = 1;
+##  strct4.integrationTime = [0,5];
+##  strct4.axs = [-1.5,1.5,-1.5,1.5,-1.5,1.5];
+##  strct4.timePlaybackModifier = 2.5;
+##  strct4.timeSkip = 0.01;
+##  strct4.selectedBody = 1;
+##  strct4.displayPath = true;
+##  strct4.figTitle = '2 Bodies Interacting to Produce 0 Net Acceleration';
+##
+##  y4 = IConditions({'1 x -1','2 x 1','1 vy 0.5'}, strct4.N);
+##
+##  initialize_N_Body_Simulation(strct4,y4);
   %=============================================================
 
   %SIMULATION 5
@@ -105,6 +109,7 @@ function n_body_problem
 ##  strct5.M = [1];
 ##  strct5.Q = [-1];
 ##  strct5.B = [0,0,1];
+##  strct5.Bx = [];
 ##  strct5.N = size(strct5.M,2);
 ##  strct5.FConstant = 1;
 ##  strct5.QConstant = 1;
@@ -122,12 +127,13 @@ function n_body_problem
   %===========================================================
 
 
-  %SIMULATION 6
-  %===========================================================
+##  %SIMULATION 6
+##  %===========================================================
 ##  strct6.figNum = 6;
 ##  strct6.M = [3,5,3,2];
 ##  strct6.Q = [-3,1,-3,4];
 ##  strct6.B = [0,0,1];
+##  strct6.Bx = [];
 ##  strct6.N = size(strct6.M,2);
 ##  strct6.FConstant = 1;
 ##  strct6.QConstant = 1;
@@ -137,13 +143,41 @@ function n_body_problem
 ##  strct6.timeSkip = 0.005;
 ##  strct6.selectedBody = 1;
 ##  strct6.displayPath = true;
-##  strct6.figTitle = 'multiple charged masses under uniform magnetic field';
+##  strct6.figTitle = 'charged mass under Functional magnetic field';
 ##
 ##  y6 = IConditions({'1 x -4','1 vx 1','1 y -3','3 y 3','4 x 4','2 y -3','3 vy -1','4 vx -2'}, strct6.N);
 ##
 ##  initialize_N_Body_Simulation(strct6,y6);
   %=================================================================
 
+
+  %SIMULATION 7
+  %Magnetic Field as a function
+  %=================================================================
+
+
+  strct7.figNum = 6;
+  strct7.M = [1];
+  strct7.Q = [1];
+  strct7.B = nan;
+  strct7.Bx = @(X,Y,Z)0;
+  strct7.By = @(X,Y,Z)0;
+  strct7.Bz = @(X,Y,Z)X;
+  strct7.N = size(strct7.M,2);
+  strct7.FConstant = 1;
+  strct7.QConstant = 1;
+  strct7.integrationTime = [0,4];
+  strct7.axs = 5.*[-1.5,1.5,-1.5,1.5,-1.5,1.5];
+  strct7.timePlaybackModifier = 5;
+  strct7.timeSkip = 0.005;
+  strct7.selectedBody = 1;
+  strct7.displayPath = true;
+  strct7.figTitle = 'multiple charged masses under magnetic field described by a function';
+
+  y7 = IConditions({'1 x 1','1 vx -1'}, strct7.N);
+
+  initialize_N_Body_Simulation(strct7,y7);
+  %=================================================================
 endfunction
 
 function Y = IConditions(y, N)
@@ -198,12 +232,14 @@ function initialize_N_Body_Simulation(strct,Y)
   if isnan(strct.Q)
       %just gravitation
       [tOpt,YOpt] = ode45(@(t,Y)(derivs(t,Y,strct)),integrationTime,Y,options);
-    elseif isnan(strct.B)
+    elseif isnan(strct.B) && isempty(strct.Bx)
       %electric and gravitation but no magnetism
       [tOpt,YOpt] = ode45(@(t,Y)(derivs(t,Y,strct) + derivsQ(t,Y,strct)),integrationTime,Y,options);
-    else
+    elseif isempty(strct.Bx)
       %Magnetism is involved
       [tOpt,YOpt] = ode45(@(t,Y)(derivs(t,Y,strct) + derivsQ(t,Y,strct) + derivsB(t,Y,strct)),integrationTime,Y,options);
+    else
+      [tOpt,YOpt] = ode45(@(t,Y)(derivs(t,Y,strct) + derivsQ(t,Y,strct) + derivsBFunction(t,Y,strct)),integrationTime,Y,options);
   endif
 
 
@@ -458,6 +494,54 @@ function dY = derivsB(t,Y,q)
   '';
 
 endfunction
+
+function dY = derivsBFunction(t,Y,q)
+  '';
+  N = q.N;
+  M = q.M;
+  Q = q.Q;
+  Bx = q.Bx;
+  By = q.By;
+  Bz = q.Bz;
+
+  x = Y(1:3:N*3-2,:);
+  y = Y(2:3:(N*3-1),:);
+  z = Y(3:3:(N*3),:);
+
+  vx = Y((N*3+1):3:end,:);
+  vy = Y((N*3+2):3:end,:);
+  vz = Y((N*3+3):3:end,:);
+
+  ax = zeros(1,N);
+  ay = zeros(1,N);
+  az = zeros(1,N);
+
+  % F = q(v x B)
+  % a = q(v x B) / m
+  for i = 1:N
+    v = [vx(i),vy(i),vz(i)];
+    Bxi = Bx(x(i),y(i),z(i));
+    Byi = By(x(i),y(i),z(i));
+    Bzi = Bz(x(i),y(i),z(i));
+    Bi = [Bxi,Byi,Bzi];
+    ax(i) = Q(i) .* cross(v,Bi,2)(1) ./ M(i);
+    ay(i) = Q(i) .* cross(v,Bi,2)(2) ./ M(i);
+    az(i) = Q(i) .* cross(v,Bi,2)(3) ./ M(i);
+  endfor
+
+  '';
+  dY(1:3:(3*N-2)) = vx;
+  dY(2:3:(3*N-1)) = vy;
+  dY(3:3:(3*N)) = vz;
+
+  dY((3*N+1):3:6*N) = ax;
+  dY((3*N+2):3:6*N) = ay;
+  dY((3*N+3):3:6*N) = az;
+  dY = dY';
+  '';
+
+endfunction
+
 
 
 
