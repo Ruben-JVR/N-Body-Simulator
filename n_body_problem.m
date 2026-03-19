@@ -27,7 +27,7 @@ function n_body_problem
 ##  y1 = IConditions({'1 x 1','2 x -1','3 y 1', '3 z 1'}, strct1.N);
 ##
 ##  '';
-##  initialize_N_Body_Simulation(strct1,y1);
+##  initialize_N_Body_Simulation(strct1,y1,'');
   %=================================================================
 
   %CIRCLE SIMULATION
@@ -49,7 +49,7 @@ function n_body_problem
 ##  strct2.figTitle = '4 masses interacting via gravitation';
 ##  y2 = IConditions({'1 x 1','2 y -1', '3 x -1', '4 y 1', '1 vy -1', '2 vx -1', '3 vy 1', '4 vx 1'}, strct2.N);
 ##
-##  initialize_N_Body_Simulation(strct2,y2);
+##  initialize_N_Body_Simulation(strct2,y2,'');
   %====================================================================
 
 
@@ -73,7 +73,7 @@ function n_body_problem
 ##
 ##  y3 = IConditions({'1 x 0.9700436','1 y -0.24308753','2 x -0.9700436','2 y 0.24308753','1 vx 0.466203685','1 vy 0.43236573','2 vx 0.466203685','2 vy 0.43236573','3 vx -0.93240737','3 vy -0.86473146'}, strct3.N);
 ##
-##  initialize_N_Body_Simulation(strct3,y3);
+##  initialize_N_Body_Simulation(strct3,y3,'');
   %===============================================
 
 
@@ -98,7 +98,7 @@ function n_body_problem
 ##
 ##  y4 = IConditions({'1 x -1','2 x 1','1 vy 0.5'}, strct4.N);
 ##
-##  initialize_N_Body_Simulation(strct4,y4);
+##  initialize_N_Body_Simulation(strct4,y4,'');
   %=============================================================
 
   %SIMULATION 5
@@ -123,7 +123,7 @@ function n_body_problem
 ##
 ##  y5 = IConditions({'1 x 0','1 vx 1','1 y -3'}, strct5.N);
 ##
-##  initialize_N_Body_Simulation(strct5,y5);
+##  initialize_N_Body_Simulation(strct5,y5,'');
   %===========================================================
 
 
@@ -147,7 +147,7 @@ function n_body_problem
 ##
 ##  y6 = IConditions({'1 x -4','1 vx 1','1 y -3','3 y 3','4 x 4','2 y -3','3 vy -1','4 vx -2'}, strct6.N);
 ##
-##  initialize_N_Body_Simulation(strct6,y6);
+##  initialize_N_Body_Simulation(strct6,y6,'');
   %=================================================================
 
 
@@ -162,11 +162,11 @@ function n_body_problem
   strct7.B = nan;
   strct7.Bx = @(X,Y,Z)0;
   strct7.By = @(X,Y,Z)0;
-  strct7.Bz = @(X,Y,Z)X;
+  strct7.Bz = @(X,Y,Z) -(Z^2 - (X^2 + Y^2)/2);
   strct7.N = size(strct7.M,2);
   strct7.FConstant = 1;
   strct7.QConstant = 1;
-  strct7.integrationTime = [0,4];
+  strct7.integrationTime = [0,40];
   strct7.axs = 5.*[-1.5,1.5,-1.5,1.5,-1.5,1.5];
   strct7.timePlaybackModifier = 5;
   strct7.timeSkip = 0.005;
@@ -174,9 +174,9 @@ function n_body_problem
   strct7.displayPath = true;
   strct7.figTitle = 'multiple charged masses under magnetic field described by a function';
 
-  y7 = IConditions({'1 x 1','1 vx -1'}, strct7.N);
+  y7 = IConditions({'1 x 3','1 vx -1'}, strct7.N);
 
-  initialize_N_Body_Simulation(strct7,y7);
+  initialize_N_Body_Simulation(strct7,y7,'penning_trap');
   %=================================================================
 endfunction
 
@@ -220,7 +220,7 @@ function Y = IConditions(y, N)
 endfunction
 
 
-function initialize_N_Body_Simulation(strct,Y)
+function initialize_N_Body_Simulation(strct,Y,saveName)
 
   N = strct.N;
   integrationTime = strct.integrationTime;
@@ -249,18 +249,7 @@ function initialize_N_Body_Simulation(strct,Y)
   ySol = YOpt(:,2:3:(3*N-1));
   zSol = YOpt(:,3:3:(3*N));
 
-  '';
-  figure(figNum); hold on;
-  axis(axs);
-  xlabel('x');
-  ylabel('y');
-  zlabel('z');
-  title(strct.figTitle);
 
-  if strct.displayPath
-    %Plot of gray orbit lines for total trajectory
-    plot3(xSol,ySol,zSol,'b','color',[0.5,0.5,0.5]);
-  endif
 
 
   %Change this to change speed of animation
@@ -290,29 +279,19 @@ function initialize_N_Body_Simulation(strct,Y)
     endif
   endfor
 
+  strct.animationTime = animationTime;
+  strct.animationTimeIndex = animationTimeIndex;
+  strct.xSol = xSol;
+  strct.ySol = ySol;
+  strct.zSol = zSol;
 
-  for i=1:length(animationTime)
 
-    for j=1:N
-      if j!= strct.selectedBody
-        h(j) = plot3(xSol(animationTimeIndex(i),j),ySol(animationTimeIndex(i),j),zSol(animationTimeIndex(i),j),'bo','markerfacecolor','r');
-      else
-        h(j) = plot3(xSol(animationTimeIndex(i),j),ySol(animationTimeIndex(i),j),zSol(animationTimeIndex(i),j),'bo','markerfacecolor','g');
-      endif
+  %SAVING TO FILE
+  if !isempty(saveName)
+    save(saveName,'strct');
+  endif
 
-    endfor
-
-    %h(1) = plot3(xSol(i,1),ySol(i,1),zSol(i,1),'bo','markerfacecolor','b');
-    %h(2) = plot3(xSol(i,2),ySol(i,2),zSol(i,2),'ro','markerfacecolor','r');
-    %h(3) = plot3(xSol(i,3),ySol(i,3),zSol(i,3),'go','markerfacecolor','g');
-
-    pause(animationTime(i));
-
-    if i<length(animationTime)
-      delete(h);
-    endif
-
-  endfor
+  play_simulation(strct);
 
   '';
 
@@ -541,6 +520,8 @@ function dY = derivsBFunction(t,Y,q)
   '';
 
 endfunction
+
+
 
 
 
