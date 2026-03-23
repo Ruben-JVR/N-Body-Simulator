@@ -1,5 +1,4 @@
 function dY = derivsBFunction(t,Y,q)
-  '';
   N = q.N;
   M = q.M;
   Q = q.Q;
@@ -32,7 +31,6 @@ function dY = derivsBFunction(t,Y,q)
     az(i) = Q(i) .* cross(v,Bi,2)(3) ./ M(i);
   endfor
 
-  '';
   dY(1:3:(3*N-2)) = vx;
   dY(2:3:(3*N-1)) = vy;
   dY(3:3:(3*N)) = vz;
@@ -41,5 +39,4 @@ function dY = derivsBFunction(t,Y,q)
   dY((3*N+2):3:6*N) = ay;
   dY((3*N+3):3:6*N) = az;
   dY = dY';
-  '';
 endfunction
