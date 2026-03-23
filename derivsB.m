@@ -1,6 +1,5 @@
 %solving differential equation for magnetic force
 function dY = derivsB(t,Y,q)
-  '';
   N = q.N;
   M = q.M;
   Q = q.Q;
@@ -25,10 +24,8 @@ function dY = derivsB(t,Y,q)
     ax(i) = Q(i) .* cross(v,B,2)(1) ./ M(i);
     ay(i) = Q(i) .* cross(v,B,2)(2) ./ M(i);
     az(i) = Q(i) .* cross(v,B,2)(3) ./ M(i);
-
   endfor
 
-  '';
   dY(1:3:(3*N-2)) = vx;
   dY(2:3:(3*N-1)) = vy;
   dY(3:3:(3*N)) = vz;
@@ -37,5 +34,4 @@ function dY = derivsB(t,Y,q)
   dY((3*N+2):3:6*N) = ay;
   dY((3*N+3):3:6*N) = az;
   dY = dY';
-  '';
 endfunction
